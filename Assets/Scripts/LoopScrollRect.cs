@@ -19,18 +19,22 @@ namespace UnityEngine.UI
         [Tooltip("Total count, negative means INFINITE mode")]
         public int totalCount;
 
+        //if one ui has two LoopScrollRect ,so not use single instance
         [HideInInspector]
         [NonSerialized]
-        public LoopScrollDataSource dataSource = LoopScrollSendIndexSource.Instance;
+        public LoopScrollDataSource dataSource = new LoopScrollSendIndexSource();//LoopScrollSendIndexSource.Instance;
         public object[] objectsToFill
         {
             // wrapper for forward compatbility
             set
             {
-                if(value != null)
+                if (value != null)
                     dataSource = new LoopScrollArraySource<object>(value);
                 else
-                    dataSource = LoopScrollSendIndexSource.Instance;
+                {
+//                    dataSource = LoopScrollSendIndexSource.Instance;
+                    dataSource = new LoopScrollSendIndexSource();
+                }
             }
         }
 
