@@ -13,6 +13,8 @@ namespace UnityEngine.UI
         //==========LoopScrollRect==========
         [Tooltip("Prefab Source")]
         public LoopScrollPrefabSource prefabSource;
+        // if you want use gameobject as pool cell ,use this line
+        //public XLoopScrollPrefabSource prefabSource;
 
         [Tooltip("Total count, negative means INFINITE mode")]
         public int totalCount;

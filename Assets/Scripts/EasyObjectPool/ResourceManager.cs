@@ -54,7 +54,22 @@ namespace SG
                 poolDict[poolName] = new Pool(poolName, pb, gameObject, size, type);
             }
         }
-
+        /// <summary>
+        /// 通过prefab初始化
+        /// 扩展by qingqing-zhao
+        /// </summary>
+        /// <param name="poolPrefab"></param>
+        /// <param name="size"></param>
+        /// <param name="type"></param>
+        public void InitPool(GameObject poolPrefab, int size, PoolInflationType type = PoolInflationType.DOUBLE)
+        {
+            if (poolPrefab == null) return;
+            var poolName = poolPrefab.name;
+            if (!poolDict.ContainsKey(poolName))
+            {
+                poolDict[poolName] = new Pool(poolName, poolPrefab, gameObject, size, type);
+            }
+        }
         /// <summary>
         /// Returns an available object from the pool 
         /// OR null in case the pool does not have any object available & can grow size is false.
@@ -70,6 +85,42 @@ namespace SG
                 InitPool(poolName, autoCreate, PoolInflationType.INCREMENT);
             }
 
+            if (poolDict.ContainsKey(poolName))
+            {
+                Pool pool = poolDict[poolName];
+                result = pool.NextAvailableObject(autoActive);
+                //scenario when no available object is found in pool
+#if UNITY_EDITOR
+                if (result == null)
+                {
+                    Debug.LogWarning("[ResourceManager]:No object available in " + poolName);
+                }
+#endif
+            }
+#if UNITY_EDITOR
+            else
+            {
+                Debug.LogError("[ResourceManager]:Invalid pool name specified: " + poolName);
+            }
+#endif
+            return result;
+        }
+        /// <summary>
+        /// Returns an available object from the pool 
+        /// can use gameobject
+        /// </summary>
+        /// <param name="poolObj"></param>
+        /// <param name="autoActive"></param>
+        /// <param name="autoCreate"></param>
+        /// <returns></returns>
+        public GameObject GetObjectFromPool(GameObject poolObj, bool autoActive = true, int autoCreate = 1)
+        {
+            GameObject result = null;
+            var poolName = poolObj.name;
+            if (!poolDict.ContainsKey(poolName) && autoCreate > 0)
+            {
+                InitPool(poolObj, autoCreate, PoolInflationType.INCREMENT);
+            }
             if (poolDict.ContainsKey(poolName))
             {
                 Pool pool = poolDict[poolName];
